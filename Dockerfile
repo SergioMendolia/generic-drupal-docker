@@ -1,4 +1,5 @@
 FROM php:7.4-apache-buster
+RUN curl -sL https://deb.nodesource.com/setup_13.x | bash -
 
 RUN apt-get update && apt-get install -y \
     # Tools
@@ -6,11 +7,11 @@ RUN apt-get update && apt-get install -y \
     # libs
     libcurl4-openssl-dev \
     libfreetype6-dev \
-    libfreetype6-dev \
     libicu-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
     libssl-dev \
+    libwebp-dev \
     libx11-6 \
     libxext6 \
     libxml2-dev \
@@ -31,6 +32,7 @@ RUN apt-get update && apt-get install -y \
     lsb-release \
     make \
     mariadb-client \
+    nodejs \
     openssl \
     libonig-dev \
     pkg-config \
@@ -42,11 +44,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-install -j$(nproc) iconv  opcache xml intl pdo_mysql xsl curl json zip bcmath mbstring exif fileinfo dom gd
-RUN docker-php-ext-configure gd
+RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp
 RUN apt-get purge -y --auto-remove libfreetype6-dev libcurl4-openssl-dev libicu-dev libpng-dev libssl-dev libxml2-dev libxslt-dev libfreetype6-dev libzip-dev zlib1g-dev
 RUN a2enmod rewrite
-RUN curl -sL https://deb.nodesource.com/setup_13.x | bash -
-RUN apt-get install -y nodejs
 # create TMP dir
 RUN mkdir -p /tmp/uploads/ && chmod +w -R /tmp/
 
